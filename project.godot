@@ -12,7 +12,11 @@ config_version=5
 
 config/name="Snake"
 config/features=PackedStringArray("4.4", "Mobile")
-config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=320
+window/size/viewport_height=320
 
 [rendering]
 
