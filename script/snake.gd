@@ -43,6 +43,14 @@ func move():
 		game_over()
 		return
 
+	var body_segments = segments.duplicate()
+	if new_head != apple_position:
+		body_segments.pop_back()
+
+	if body_segments.has(new_head):
+		game_over()
+		return
+
 	segments.insert(0, new_head)
 	if new_head == apple_position:
 		spawn_apple()
