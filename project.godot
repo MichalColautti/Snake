@@ -11,13 +11,18 @@ config_version=5
 [application]
 
 config/name="Snake"
+run/main_scene="uid://n8wlwnuom2i1"
 config/features=PackedStringArray("4.4", "Mobile")
 
 [display]
 
-window/size/viewport_width=320
-window/size/viewport_height=320
+window/size/viewport_width=720
+window/size/viewport_height=1280
+window/stretch/mode="viewport"
+window/handheld/orientation=1
 
 [rendering]
 
-renderer/rendering_method="mobile"
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true

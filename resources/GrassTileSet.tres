@@ -1,17 +1,23 @@
 [gd_resource type="TileSet" load_steps=3 format=3 uid="uid://buoexoiaspit3"]
 
-[ext_resource type="Texture2D" uid="uid://dl33k035imsxl" path="res://assets/GrassTileSet.png" id="1_1817q"]
+[ext_resource type="Texture2D" uid="uid://7sc58732lhro" path="res://assets/GrassTileSet.png" id="1_1817q"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_f55hs"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_1817q"]
 texture = ExtResource("1_1817q")
+texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0
 3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
 0:1/0 = 0
 1:1/0 = 0
 2:1/0 = 0
 3:1/0 = 0
+4:1/0 = 0
+5:1/0 = 0
 
 [resource]
-sources/0 = SubResource("TileSetAtlasSource_f55hs")
+tile_size = Vector2i(32, 32)
+sources/1 = SubResource("TileSetAtlasSource_1817q")
