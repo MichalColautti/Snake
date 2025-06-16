@@ -1,7 +1,8 @@
 extends Node2D
 
-@export var grid_size = 16
+@export var grid_size = 32
 
+# Snake textures
 @export var head_texture: Texture2D = preload("res://assets/SnakeHead.png")
 @export var body_texture: Texture2D = preload("res://assets/SnakeBody.png")
 @export var tail_texture: Texture2D = preload("res://assets/SnakeTail.png")
@@ -13,6 +14,10 @@ var segments = [Vector2(5, 5), Vector2(4, 5), Vector2(3, 5)]
 
 var move_timer = 0.2
 var time_passed = 0.0
+
+# Swipe handling
+var swipe_start_pos = Vector2.ZERO
+var swipe_in_progress = false
 
 func _ready():
 	update_snake_visuals()
@@ -26,7 +31,7 @@ func _process(delta):
 func move():
 	var new_head = segments[0] + direction
 
-	var cell = tilemap.get_cell_atlas_coords(new_head)
+	var cell = tilemap.get_cell_atlas_coords(new_head - Vector2(0, 1))
 	if is_wall(cell):
 		game_over()
 		return
@@ -36,7 +41,7 @@ func move():
 		update_snake_visuals()
 
 func is_wall(tile_id):
-	return tile_id == Vector2i(0,1)
+	return tile_id == Vector2i(2,0)
 
 func game_over():
 	print("Hit wall")
@@ -63,9 +68,39 @@ func update_snake_visuals():
 		add_child(sprite)
 
 func _unhandled_input(event):
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			swipe_start_pos = event.position
+			swipe_in_progress = true
+		else:
+			if swipe_in_progress:
+				var swipe_end_pos = event.position
+				handle_swipe(swipe_end_pos - swipe_start_pos)
+				swipe_in_progress = false
+
+	if event is InputEventScreenDrag:
+		pass
+
 	if event is InputEventKey and event.pressed:
 		match event.keycode:
 			KEY_UP: if direction != Vector2.DOWN: direction = Vector2.UP
 			KEY_DOWN: if direction != Vector2.UP: direction = Vector2.DOWN
 			KEY_LEFT: if direction != Vector2.RIGHT: direction = Vector2.LEFT
 			KEY_RIGHT: if direction != Vector2.LEFT: direction = Vector2.RIGHT
+
+func handle_swipe(delta):
+	if delta.length() < 20:
+		return
+
+	if abs(delta.x) > abs(delta.y):
+		# swipe poziomy
+		if delta.x > 0 and direction != Vector2.LEFT:
+			direction = Vector2.RIGHT
+		elif delta.x < 0 and direction != Vector2.RIGHT:
+			direction = Vector2.LEFT
+	else:
+		# swipe pionowy
+		if delta.y > 0 and direction != Vector2.UP:
+			direction = Vector2.DOWN
+		elif delta.y < 0 and direction != Vector2.DOWN:
+			direction = Vector2.UP
