@@ -7,6 +7,11 @@ extends Node2D
 @export var body_texture: Texture2D = preload("res://assets/SnakeBody.png")
 @export var tail_texture: Texture2D = preload("res://assets/SnakeTail.png")
 
+# Apple texture
+@export var apple_texture: Texture2D = preload("res://assets/Apple.png")
+
+var apple_position = Vector2.ZERO
+
 @onready var tilemap = get_parent().get_node("GrassTileMapLayer") 
 
 var direction = Vector2.RIGHT
@@ -21,6 +26,8 @@ var swipe_in_progress = false
 
 func _ready():
 	update_snake_visuals()
+	randomize() 
+	spawn_apple()
 
 func _process(delta):
 	time_passed += delta
@@ -35,10 +42,15 @@ func move():
 	if is_wall(cell):
 		game_over()
 		return
+
+	segments.insert(0, new_head)
+	if new_head == apple_position:
+		spawn_apple()
 	else:
-		segments.insert(0, new_head)
 		segments.pop_back()
-		update_snake_visuals()
+
+	update_snake_visuals()
+	update_apple_visual()
 
 func is_wall(tile_id):
 	return tile_id == Vector2i(2,0)
@@ -49,7 +61,8 @@ func game_over():
 
 func update_snake_visuals():
 	for child in get_children():
-		child.queue_free()
+		if child.name != "Apple":
+			child.queue_free()
 
 	for i in range(segments.size()):
 		var segment_pos = segments[i]
@@ -66,7 +79,7 @@ func update_snake_visuals():
 		else:
 			sprite.texture = body_texture 
 		add_child(sprite)
-
+	
 func _unhandled_input(event):
 	if event is InputEventScreenTouch:
 		if event.pressed:
@@ -104,3 +117,32 @@ func handle_swipe(delta):
 			direction = Vector2.DOWN
 		elif delta.y < 0 and direction != Vector2.DOWN:
 			direction = Vector2.UP
+
+func spawn_apple():
+	var map_rect = tilemap.get_used_rect()
+
+	var min_x = map_rect.position.x + 3
+	var max_x = map_rect.position.x + map_rect.size.x - 3
+	var min_y = map_rect.position.y + 3
+	var max_y = map_rect.position.y + map_rect.size.y - 3
+
+	var found = false
+	while not found:
+		var pos = Vector2(randi() % (max_x - min_x + 1) + min_x, randi() % (max_y - min_y + 1) + min_y)
+		if not segments.has(pos):
+			apple_position = pos
+			found = true
+	
+	update_apple_visual()
+
+func update_apple_visual():
+	if has_node("Apple"):
+		get_node("Apple").queue_free()
+
+	var apple_sprite = Sprite2D.new()
+	apple_sprite.name = "Apple"
+	apple_sprite.texture = apple_texture
+	apple_sprite.position = apple_position * grid_size
+	apple_sprite.z_index = 1
+	add_child(apple_sprite)
+	print("Nowe jabłko na: ", apple_position)
